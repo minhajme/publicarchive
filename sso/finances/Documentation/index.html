@@ -1,0 +1,328 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<head lang="en">
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Financial Department Documentation</title>
+	<!-- Framework CSS -->
+	<link rel="stylesheet" href="assets/blueprint-css/screen.css" type="text/css" media="screen, projection">
+	<link rel="stylesheet" href="assets/blueprint-css/print.css" type="text/css" media="print">
+	<!--[if lt IE 8]><link rel="stylesheet" href="assets/blueprint-css/ie.css" type="text/css" media="screen, projection"><![endif]-->
+	<link rel="stylesheet" href="assets/blueprint-css/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
+	<style type="text/css" media="screen">
+		p, table, hr, .box { margin-bottom:25px; }
+		.box p { margin-bottom:10px; }
+	</style>
+</head>
+
+
+<body>
+	<div class="container">
+	
+		<h3 class="center alt">&ldquo;<span class="center">Financial Department</span>&rdquo; Documentation by &ldquo;Arash Farivar&rdquo; v0.2</h3>
+		
+	<hr>
+		
+		<h1 class="center">&ldquo;Financial Department&rdquo;</h1>
+		
+		<div class="borderTop">
+			<div class="span-6 colborder info prepend-1">
+				<p class="prepend-top">
+					<strong>
+					Created: 9/17/2013<br>
+					By: Arash Farivar<br>
+					Email: <a href="mailto:a.farivar@yahoo.com">a.farivar@yahoo.com</a>
+					</strong>
+				</p>
+		</div><!-- end div .span-6 -->		
+	
+			<div class="span-12 last">
+				<p class="prepend-top append-0">Thank you for purchasing our software. If you have any questions that are beyond the scope of this help file, please feel free to email via my user page contact form <a href="http://codecanyon.net/user/ArashFarivar">here</a>. Thanks so much!</p>
+			</div>
+</div><!-- end div .borderTop -->
+		
+		<hr>
+		
+		<h2 id="toc" class="alt">Table of Contents</h2>
+		<ol class="alpha">
+  	<li><a href="#install">Installation</a></li>
+  	<li><a href="#database">Database Tables</a></li>
+    <li><a href="#">Pages</a>
+    	<ol>
+    	<li><a href="#functions">Functions (function.php)</a></li>
+      <li><a href="#register">Create new user (register.php)</a></li>
+      <li><a href="#reset">Forgot my password (resetpassword.php)</a></li>
+      <li><a href="#newpassword">Reset password (password.php)</a></li>
+      <li><a href="#login">Login (login.php)</a></li>
+      <li><a href="#logout">Logout (logout.php)</a></li>
+      <li><a href="#user">Account Settings (user.php)</a></li>
+      <li><a href="#password">Edit Account Password (editpassword.php)</a></li>
+      <li><a href="#index">Main Page (index.php)</a></li>
+      <li><a href="#add">Insert New Item (add.php)</a></li>
+      <li><a href="#detail">Item Detail (detail.php)</a></li>
+      <li><a href="#edit">Edit Item (edit.php)</a></li>
+    	</ol>
+    </li>
+    <li><a href="#notifications">Notifications</a></li>
+    <li><a href="#js">JavaScripts</a><br />
+  <br />
+  </li>
+  </ol>
+		
+		<hr>
+	<h3 id="install"><strong>A) Installation</strong> - <a href="#toc">top</a></h3>
+		 <p>To install this software on your website or on your local computer, you just need to:</p>
+<ol>
+<li>Copy the files somewhere</li>
+<li>Create database tables</li>
+<li>Config the &quot;db.php&quot; file</li>
+<li>Write your site's name in few places in &quot;resetpassword.php&quot;</li>
+<li>And add your site's IP to &quot;/notifications/config.php&quot; (will be used in Cron Jobs)<br>
+</li>
+</ol>
+<br>
+<hr>
+
+		<h3 id="database"><strong>B) Database tables</strong> - <a href="#toc">top</a></h3>
+
+		<p>We have four tables, one table is the users, other is for the data. And one table for storing password reset requests. And in the last table, each day we add tomorrow's data, and send their owners email (this is done with Cron Jobs)</p> 
+<ol>
+<li>
+Users table sql code:
+<pre>
+CREATE TABLE IF NOT EXISTS `users` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`name` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+`email` varchar(30) COLLATE utf8_bin NOT NULL,
+`password` char(128) COLLATE utf8_bin NOT NULL,
+`salt` char(128) COLLATE utf8_bin NOT NULL,
+`currency` varchar(20) COLLATE utf8_bin NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1;</pre>
+</li>
+<li>Data table (finances) sql code:
+<pre>CREATE TABLE IF NOT EXISTS `finances` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`name` varchar(30) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+`description` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+`date` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+`sign` int(11) NOT NULL,
+`amount` double NOT NULL,
+`user` varchar(30) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1000;</pre></li><li>
+The password reset request table
+<pre>CREATE TABLE IF NOT EXISTS `password_reset` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`user` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+`user_id` int(11) NOT NULL,
+`link` char(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+`date` char(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1;</pre>
+</li>
+<li>
+Auto notification's table:
+<pre>CREATE TABLE IF NOT EXISTS `notifications` (<br>  `id` int(11) NOT NULL AUTO_INCREMENT,<br>  `email` varchar(30) COLLATE utf8_bin NOT NULL,<br>  `title` varchar(30) COLLATE utf8_bin NOT NULL,<br>  `description` text COLLATE utf8_bin NOT NULL,<br>  `amount` int(11) NOT NULL,<br>  `sign` int(11) NOT NULL,<br>  PRIMARY KEY (`id`)<br>) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;</pre>
+</li>
+</ol>
+<p>After your database is ready, you must put your database connection data into "db.php"<br />
+Open this file and change the values.</p>
+
+<pre>$user_name = &quot;database username&quot;;
+$password = &quot;database password&quot;;
+$database = &quot;database name&quot;;
+$server = &quot;database server&quot;;</pre>
+<p>Now this software is almost ready to work.<br />
+  *For more security, create user for database with 'select', 'insert', 'update' and 'delete' only.  </p>
+
+</p>
+
+<hr>
+<h3 id="pages"><strong>C) Pages</strong> - <a href="#toc">top</a></h3>
+		
+<ol>
+  
+<h2>Pages:</h2>
+<li>
+  <h3 id="functions">Functions (function.php) - <a href="#toc">top</a></h3>
+  In this file, we have the most useful functions.<br />
+  <ul style="line-height:24px; margin-top:20px">
+    <li><strong>Login($email,$pass)</strong> Checks the email and password. If the entered email and password are correct, registers the login and returns true.</li>
+    <li><strong>checklogin()</strong> Checks if there is an active login, and returns the username, user id, email and currency of the logged in user. If the login is not registered, or it has wrong data, directs the user to the login page.</li>
+    <li><strong>Logout()</strong> destroys the current login and goes to the login page.</li>
+    <li><strong>Logout2()</strong> same as &quot;Logout()&quot; but this one doesn't redirect to the login page. Just destroys the current login.</li>
+     <li><strong>StrClean($string)</strong> Removes all other characters except alphabet and numbers and '.' and returns the string.</li>
+    <li><strong>StrQuote($string)</strong> Removes the quotes from the string and returns it.</li>
+    <li><strong>RemoveGet($name ,$url)</strong> This is used to remove a GET varible from the url.<br />
+      For exaple, RemoveGet("id" ,"a=123&x=55&id=532") returns "a=123&x=55" </li>
+    <li><strong>StartSession()</strong> Starts the session for login. (this function is called at the beginning of this file and we do not need to use it anywhere)</li>
+<li><strong>RemoveTags($string) </strong>Replaces &lt; and &gt; with their html code. So user can not enter html objects.</li>
+  </ul>
+<br>
+
+</li>
+<li>
+	<h3 id="register">Create new user (register.php) - <a href="#toc">top</a></h3>
+	<p>To create an account, we need user's name, email, password and currency sign e.g $ (this will be shown next to the prices...)<br />We also have a math question in the form, to stop bots sumbitting the form.</p>
+<p>
+We generate two random numbers between 1 and 30. Then we generate another random number between 0 and 1 (will be 0 or 1). If it's 1, we sum the two numbers. If 0, we subtract them. The answer is set in a session and when we check for the answer, we get it from this session.</p>
+<p>
+File "js/checkSignup.js" is executed before sumbitting the form. First, all fields are check not to be null. Then, the email is checked. Then the password is checked to be at least 5 characters long.</p><p>
+After the form is submited, we check for the math question, If there are no errors, we generate the unique 'salt' code for the new user, and also we hash the user's password with this salt code. And then insert the data into the database field. The coded password is written in the database so if somebody somehow succeeds to steel the database data, he can't use this password to login.</p>
+</li>
+<li>
+<h3 id="reset">Forgot my password (resetpassword.php) - <a href="#toc">top</a></h3>
+<p>
+When somebody has forgotten his/her password, They enter their email on this page, First we check to see if this email really exists in the user table or not. If it exists, we generate a unique code for this request. We add the user's name, id, this request code and current date and time (we want to set this request expire after 24 hours) into the table &quot;password_reset&quot;. And the link will be sent to the user's Email.</p>
+<p>
+<strong>Please Open &quot;resetpassword.php&quot;:</strong><br />
+At line 27, write an email address. (Reset requests will be sent to users from this email)<br />
+At line 29, add your site's address before &quot;/password.php?l=...&quot; (the location this program is) </p>
+
+<p>At sumbitting the form, script &quot;js/checkReset.js&quot; is executed to check if the form is filled correctly before submission. (Also form fields are checked in php script.)</p>
+</li>
+<li>
+<h3 id="newpassword">Reset password (password.php) - <a href="#toc">top</a></h3>
+<p>After the user got the reset link in their mailbox, the reset link will bring them here. Link will be similar to "password.php?l=dfsd5456dsfs6df84sdf1..."</p><p>
+The variable 'l' contains the reset code. Now we check the reset table to see if this request exists. If it doesn't exist, the user will be redirected to "resetpassword.php" page. Then we compare the date field with current date and time. If the difference is more than a day, the user will be redirected to the login page.</p>
+<p>
+After the user entered his new password, we check both passwords fields to be the same. Then we get the salt code for this user, hash it with the new password, and update the user data. And finally we delete this password request from the &quot;password_reset&quot; table.<br>
+</p>
+<p>
+<p>At sumbitting the form, script &quot;js/checkChangePassword.js&quot; is executed to check if the form is filled correctly before submission. (Also form fields are checked in php script.)</p>
+</li>
+<li>
+<h3 id="login">Login (login.php) - <a href="#toc">top</a></h3>
+<p>To login, we call the function &quot;Login(email,password)&quot; with user's email and password.</p>
+<pre>if(Login($_POST['email'],$_POST['password'])){
+	setcookie("day",$_POST['day']);
+	header('location:index.php');
+}
+else
+{
+	$error=&quot;Invalid username or password&quot;;
+}</pre>
+<p>First it checks to see if a user exists with this email. We hash this user's salt code with  login password. If this hashed password equals the  password in the database, so it's correct. The login is correct. We set a session and put the ID in it. Another session with Email in it. And another session with the user's password hashed with user's browser's data. The login is successfully done. Also we set the cookie &quot;day&quot;. We put user's date in it. We use this cookie to separate future data from past data.</p>
+The user can now visit the protected pages.<br />
+<p>At each protected page, we first check if the login is registered and it's correct. First we check if sessions are set. Then we select the password from user table, where the id and email are equal to the sessions. then we hash user's password with user's browser, Now, if this is the same with the last session, so this user is logged in. and can view the page!</p>
+<pre>include 'functions.php';
+checklogin();</pre>
+<p>When user clicks &quot;login&quot;, script &quot;js/checkChangePassword.js&quot; is executed to check if the form is filled correctly before submission. (Also form fields are checked in php script.)</p>
+</li>
+<li>
+<h3 id="logout">Logout (logout.php) - <a href="#toc">top</a></h3>
+<p>To logout from the system, we call the function &quot;Logout()&quot;.</p><pre>include 'functions.php';
+Logout();</pre><p>
+It destroys the session and redirects to the login page.</p>
+</li>
+<li>
+<h3 id="user">Account Settings (user.php) - <a href="#toc">top</a></h3>
+<p>After a user is logged in, he can view his data and... Also he can edit his account. At this page, user's email and currency can be edited.</p>
+<p>If user wants to change his email, we first check to see if a user with this new email doesn't exist.</p>
+<p>When user submits the form, &quot;js/checkAccount.js&quot; is executed to check if the form is filled correctly before submission. (Also form fields are checked in php script.)</p>
+</li>
+<li>
+<h3 id="password">Edit Account Password (editpassword.php) - <a href="#toc">top</a></h3>
+<p>If a user wants to change his password, He must first tell use about the old password. And the new one.</p>
+<p>
+First we check if this user has entered the current password correctly. If the old password given by the user and the user's salt's hash equals the database password, we hash the new password and the salt code and put it back to the database.</p>
+<p>When user submits the form, &quot;js/checkPassword.js&quot; is executed to check if the form is filled correctly before submission. (Also form fields are checked in php script.)</p>
+</li>
+<li>
+<h3 id="index">Main Page (index.php) - <a href="#toc">top</a></h3>
+<p>This page is the main page. We show the user's expenses and incomes here...</p>
+<p>
+Each user's email is unique. So we use this email for adding, editing and for checking if the this user is the owner of the item.</p>
+<pre>select * from finances  where user='&quot;.$email.&quot;'</pre>
+<p><strong>Search:</strong> To search between user's records, we add &quot;?search=<em>search</em>&quot; to the url.<br />
+So the select command will be like this:
+<pre>select * from finances  where user='&quot;.$email.&quot;</span> AND name LIKE '%&quot;. $_GET['search'].&quot;%</pre>
+<p>The sign ' %' is replaced with letters. For example '%s' will return us the records which have 's' at the end of their name.</p>
+<p>The past and today's data will be shown in one table, and future's data will be shown in another tabe below.<br>
+To seperate these items, we need user's current date. (we can also use server's date but usually server and user have different clocks and dates). When the user logged in, we put his date in a cookie named "day". At this page we check for this date. Past incomes/expenses have date lower or equal to today. And future's date is greater than today.</p>
+<pre>select * from finances WHERE user='&quot;.$email.&quot;' AND date&gt;'&quot;.$today.&quot;'   (to get future's items)</pre><p>At each page reload, javascript is executed and it put's user's date into the cookie. So if user's data is changed, results will also be updated.
+<p><strong>Sort:</strong> To sort the result, We add &quot;?sort=<em>sort</em>&quot; to the url. For example, &quot;?sort=amount&quot;.<br />
+  To sort ascending or descending, we add &quot;?sort=<em>sort</em>&amp;by=desc&quot;<br />
+  'by' only works when there is a &quot;sort&quot; variable in the url.
+</p><p>When there are variables in the url (search, sort, by), These variables are added to the item detail page link, edit link, excel generator and... So we keep the sorts and search at when we go to these pages. And when we return back to this page from the other pages, our sort and search will be shown again.</p><br /><img src="assets/images/1.jpg"/><br>
+<br />
+<p><strong>Bars:</strong> To build the bars, we add both past incomes and past expenses, to find the whole amount. Then, expenses and incomes will be multiplied in 100, and divided into the whole amount. (we find the percentage to set bar's width)</p>
+<p>When there is a search, the expenses and incomes from the search result is shown as bars.</p>
+<p><strong>Print:</strong> To print the data, we have a Javascript. It creates a new window, copies the bars and data and an image at the top of page. And prints it and then close the little window. The function is in &quot;Print.js&quot;</p>
+</li>
+<li>
+  <h3 id="add">Insert New Item (add.php) - <a href="#toc">top</a>
+  </h3>
+  <p>At this page, we insert the data submitted from the form into the finances table. With logged in user's email.</p>
+  <p>We used the <a href="http://jqueryui.com/datepicker/">jQuery Datepicker</a></p>
+  <p>When user submits the form, &quot;js/checkForms.js&quot; is executed to check the form values. This script is also used in editing the item.</p>
+</li>
+<li><h3 id="detail">Item Detail (detail.php) - <a href="#toc">top</a></h3>
+<p>At this page user can see all data of a record. To select a record and show it, we need it's unique ID. First we check to see if this record, with this id and user's email exists, if it doesn't exist, user will be headed to the main page.</p>
+<p><strong>Delete: </strong>When user clicks &quot;delete&quot;, we delete this record and head the user to the main page.</p>
+</li>
+<li><h3 id="edit">Edit Item (edit.php) - <a href="#toc">top</a></h3>
+<p>This page is similar to the New Item page. Just here, the data are loaded into the fields and we are updating it.</p>
+</li><br />
+<h4 style="color:#900">For more information about the PHP code, open the page source and read the description for each line.</h4><br />
+</ol>
+
+<hr>
+		
+	<h3 id="notifications"><strong>D) Automatic Email Notifications</strong> - <a href="#toc">top</a></h3>
+    When a user chooses a future date for his income or expense, this means he hasn't yet paid or got paid. One day before this day we send this user an email and warn him about this. We remind if he will pay, or he will get paid.<br>
+This action is done by 2 PHP scripts (both in directory &quot;notifications&quot;). To run these scripts automatically, we must use &quot;Cron Jobs&quot;.<br><br>
+
+<ol>
+<li><strong>&quot;n1.php&quot; :</strong>This file is executed only once a day. This script, inserts all records from &quot;finances&quot; table into the &quot;notifications&quot; table, if the date is tomorrow.
+<pre>INSERT INTO `notifications`(`email`, `title`, `description`, `amount`, `sign`) <br>SELECT user, name, description, amount, sign from `finances` where `date`='<em>Tomorrow</em>'</pre>
+</li><br>
+
+<li><strong>&quot;n2.php&quot; : </strong>This script must be executed from time to time and each time, it reads 2 records from the &quot;notifications&quot; table and sends them to their owner's email. (You can change the number. But not many at once.)</li>
+</ol>
+<p>Because sending many emails at once is not good and it might cause problems, we run the second script from time to time (for example every 4 minutes)</p><p>
+So we will have the first script executed once a day. (at 12:00AM usually). It will put all the mail content into the 
+ &quot;notifications&quot; table in database. The second script is executed from time to time, and each time it sends 2 mails and deletes them from  &quot;notifications&quot; table.</p>
+<p>If you can, please protect the &quot;notifications&quot; directory from public. So nobody will be able to go and run these scripts. Only the Cron Job must do this. Because if somebody executes the first script, today's mails will be doubled. If refreshes the page, mails will be triple... So please protect this directory.</p>
+<p>Because when these scripts were executed by Cron, couldn't connect database server (when it's "localhost"). So we write our website's IP address in the file &quot;/notifications/config.php&quot;. And the scripts will connect to database with this address.</p>
+<p>To add the scripts to the Cron Jobs,  I used these commands and it worked well.</p><br>
+
+1st script: (at 12:00 AM everyday)
+<pre>50 	14 	* 	* 	* 	php -f /home/<em>my_user</em>/public_html/findep/notifications/n1.php>/dev/null</pre><br>
+
+2nd script: ( every 4 minutes)
+<pre>*/4 	* 	* 	* 	* 	php -f /home/<em>my_user</em>/public_html/findep/notifications/n2.php>/dev/null</pre><br>
+
+<hr>
+		
+<h3 id="js"><strong>E) JavaScripts</strong> - <a href="#toc">top</a></h3>
+		
+		<p>In this project, Javascripts are highly used for checking the form values. When the form is submitted, a function is called. This function checks the values are not null, and they are correct (email must have a @ or password at least must be 5 characters or data must be at correct format). If there is an error, the script shows the error message in the '&lt;span id=&quot;FormMessages&quot;&gt;&lt;/span&gt;'.</p>
+<p><strong>print.js </strong>To print the user data, script creates a window, and copies the data we want to print into it. And then calls the print.<br />
+The bars style is changed for printing. Because backgrounds are not shown in printing.<br>
+</p>
+<p><strong>today.js </strong>This script get's user computer's date. and sets this to the cookie &quot;day&quot; value.</p>
+<p>
+<hr>
+		<p>Once again, thank you so much for purchasing this script. As I said at the beginning, I'd be glad to help you if you have any questions relating to this software. No guarantees, but I'll do my best to assist. If you have a more general question relating to the software on CodeCanyon, you might consider visiting the forums and asking your question in the "Item Discussion" section.</p>
+<p>You can add an empty file &quot;index.html&quot; to the directories &quot;js&quot;,&quot;css&quot;,&quot;notifications&quot; to stop direct access to them. But please protect the directory &quot;notifications&quot; from public access.</p> 
+	<br /><hr>
+        <h3><strong> Sources and Credits</strong> - <a href="#toc">top</a></h3>
+		
+<ul>
+			<li><a href="http://jqueryui.com/datepicker/">jQuery Datepicker</a></li>
+			<li>Icones by <a href="http://famfamfam.com" rel="nofollow" target="_blank">Famfamfam</a></li>
+
+        </ul>
+        
+        <br>
+  If you find a bug, Please tell us soon as possible. We will fix it and update this software.<br>
+
+   Please rate this file.  <img src="assets/images/index_envato-star.png" height="12" width="13" /><img src="assets/images/index_envato-star.png" height="12" width="13" /><img src="assets/images/index_envato-star.png" height="12" width="13" /><img src="assets/images/index_envato-star.png" height="12" width="13" /><img src="assets/images/index_envato-star.png" height="12" width="13" />  And Thank you.<br />
+  We would also be happy to help you in other subjects if we can. </p>
+<p class="append-bottom alt large"><strong>Arash Farivar</strong></p>
+		<p><a href="#toc">Go To Table of Contents</a></p>
+		
+		<hr class="space">
+	</div><!-- end div .container -->
+</body>
+</html>

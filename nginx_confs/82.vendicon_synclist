@@ -1,0 +1,20 @@
+server {
+	listen 82;
+	listen [::]:82;
+
+	server_name vendicon_synclist;
+
+	root /home/path/to/vendicon_synclist/;
+	index index.php index.html;
+
+	location / {
+		try_files $uri $uri/ =404;
+        	autoindex on;
+	}
+	
+	location ~ \.php$ {
+		include snippets/fastcgi-php.conf;
+		#phpbrew
+		fastcgi_pass unix:/home/<user>/.phpbrew/php/php-5.4.16/var/run/php-fpm.sock;
+	}
+}
