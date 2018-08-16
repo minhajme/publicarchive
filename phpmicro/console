@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+
+/** @var \Resgef\SyncList\Lib\SyncList\SyncListApp $app */
+$app = require __DIR__ . '/app.php';
+
+use Symfony\Component\Console\Application;
+
+$application = new Application();
+
+$application->add(new \Resgef\SyncList\Commands\DeployPhinx\DeployPhinxCommand($app));
+$application->add(new \Resgef\SyncList\Commands\BikroyGetSellingList\BikroyGetSellingListCommand($app));
+$application->add(new \Resgef\SyncList\Commands\CreateUser\CreateUserCommand($app));
+$application->add(new \Resgef\SyncList\Commands\PhinxLogRemove\PhinxLogRemoveCommand($app));
+
+$application->run();

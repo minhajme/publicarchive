@@ -1,0 +1,30 @@
+{% extends 'index.twig' %}
+{% block content %}
+    <div>
+        <a class="glyphicon glyphicon-arrow-left" href="{{ url('') }}"> back</a>
+        <h3>{{ sources|length }} source urls</h3>
+        <ul>
+            {% for source in sources %}
+                <li>
+                    <a href="{{ source.url }}">{{ source.title }}</a><a class="btn btn-default"
+                                                                        href="{{ source_delete_url(source.id) }}">delete</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% if msg %}
+        <div class="alert alert-info">{{ msg }}</div>
+    {% endif %}
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+    {% if sources is empty %}
+        <form action="" method="post">
+            <div>
+                <label for="url">Insert new bikroy.com listing url</label><br>
+                <textarea name="url" id="url"></textarea>
+            </div>
+            <button type="submit">save</button>
+        </form>
+    {% endif %}
+{% endblock %}
