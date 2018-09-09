@@ -1,0 +1,24 @@
+{% extends 'index.twig' %}
+{% block content %}
+    <h4>{{ listings|length }} entries <a class="btn btn-default" href="{{ url('admin') }}">add new source url</a></h4>
+    {% if listings is not empty %}
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>title</th>
+                <th>price</th>
+                <th>post date</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entry in listings %}
+                <tr>
+                    <td><a href="{{ viewable_url(user_id, entry.id, entry.url) }}">{{ entry.title }}</a></td>
+                    <td>{{ entry.price }}</td>
+                    <td>{{ entry.posted }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
