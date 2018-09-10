@@ -1,0 +1,26 @@
+LAMP server setup:
+https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-18-04
+
+install php runtime and fpm
+>>apt install php-fpm php-xml php-mysql php-mbstring php-zip
+
+install mysql package:
+>>apt install mysql-server mysql-client
+
+URL rewrite in nginx: 
+https://www.nginx.com/resources/wiki/start/topics/recipes/codeigniter/
+
+fix for mysql root login and some security:
+>>sudo mysql_secure_installation
+>>sudo mysql
+>>ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+>>FLUSH PRIVILEGES;
+>>SELECT user,authentication_string,plugin,host FROM mysql.user;
+Now you will be able to root login with >>mysql -u root -p
+Remember, there is always >>sudo mysql
+
+mysql database create and user permission:
+create database 'test'
+create user 'user'@'localhost' identified by 'password'
+grant all privileges on test.* to 'user'@'localhost'
+flush privileges
