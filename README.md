@@ -1,5 +1,4 @@
-# publicarchive
-some old project sources and some recent works
+# some very old project sources 
 
 - Crawler bikroy.com https://github.com/minhajme/publicarchive/tree/master/bikroy_autofind.quick
 - Ajax autopolling and query subscription https://github.com/minhajme/publicarchive/tree/master/fnajax
